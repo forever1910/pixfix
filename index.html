@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PixFix — AI 修图服务</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{brand:'#e3170a'}}}}</script>
+<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}</style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen">
+
+<!-- Hero -->
+<header class="text-center pt-20 pb-12 px-4">
+  <h1 class="text-5xl font-bold tracking-tight">Pix<span class="text-brand">Fix</span></h1>
+  <p class="mt-4 text-zinc-400 text-lg max-w-md mx-auto">丢个网盘链接，等着收精修大片。<br>AI 全自动，不用学，不用等。</p>
+</header>
+
+<!-- Submit Form -->
+<section class="max-w-md mx-auto px-4 mb-16">
+  <form id="taskForm" class="space-y-4">
+    <div>
+      <label class="block text-sm text-zinc-400 mb-1">怎么称呼</label>
+      <input type="text" id="name" required placeholder="你的名字" 
+        class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:border-brand focus:outline-none">
+    </div>
+    <div>
+      <label class="block text-sm text-zinc-400 mb-1">网盘链接</label>
+      <input type="url" id="link" required placeholder="百度网盘 / 阿里云盘 分享链接" 
+        class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:border-brand focus:outline-none">
+    </div>
+    <div>
+      <label class="block text-sm text-zinc-400 mb-1">修图要求（选填）</label>
+      <textarea id="notes" rows="2" placeholder="比如：日系清新风、人像精修、只要5张…"
+        class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:border-brand focus:outline-none"></textarea>
+    </div>
+    <button type="submit" class="w-full bg-brand hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition-colors">
+      提交修图任务
+    </button>
+  </form>
+  <div id="submitMsg" class="hidden mt-4 p-3 rounded-lg text-center text-sm"></div>
+</section>
+
+<!-- Task List -->
+<section class="max-w-md mx-auto px-4 pb-20">
+  <h2 class="text-lg font-semibold mb-4">我的任务</h2>
+  <div id="taskList" class="space-y-3"></div>
+</section>
+
+<script>
+const STATUS = { pending: {label:'待处理',color:'text-yellow-400'}, processing:{label:'处理中',color:'text-blue-400'}, done:{label:'已完成',color:'text-green-400'} };
+
+function loadTasks(){ return JSON.parse(localStorage.getItem('pixfix_tasks')||'[]') }
+function saveTasks(t){ localStorage.setItem('pixfix_tasks', JSON.stringify(t)) }
+
+function renderTasks(){
+  const tasks = loadTasks();
+  const el = document.getElementById('taskList');
+  if(!tasks.length){ el.innerHTML = '<p class="text-zinc-600 text-sm">还没有任务，提交一个试试</p>'; return }
+  el.innerHTML = tasks.reverse().map((t,i) => `
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+      <div class="flex justify-between items-start mb-2">
+        <span class="font-medium">${t.name}</span>
+        <span class="text-xs ${STATUS[t.status].color}">${STATUS[t.status].label}</span>
+      </div>
+      <p class="text-sm text-zinc-500 truncate">${t.link}</p>
+      ${t.notes ? `<p class="text-xs text-zinc-600 mt-1">${t.notes}</p>` : ''}
+      ${t.status === 'done' && t.output ? `<a href="${t.output}" target="_blank" class="inline-block mt-2 text-xs text-brand hover:underline">查看成品 →</a>` : ''}
+    </div>`).join('');
+}
+
+document.getElementById('taskForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const task = {
+    id: Date.now().toString(36),
+    name: document.getElementById('name').value.trim(),
+    link: document.getElementById('link').value.trim(),
+    notes: document.getElementById('notes').value.trim(),
+    status: 'pending',
+    created: new Date().toISOString()
+  };
+  const tasks = loadTasks();
+  tasks.push(task);
+  saveTasks(tasks);
+  
+  const msg = document.getElementById('submitMsg');
+  msg.className = 'mt-4 p-3 rounded-lg text-center text-sm bg-green-900/50 text-green-300';
+  msg.textContent = '已提交！修完后会通知你。';
+  msg.classList.remove('hidden');
+  
+  e.target.reset();
+  renderTasks();
+  setTimeout(() => msg.classList.add('hidden'), 3000);
+});
+
+renderTasks();
+</script>
+</body>
+</html>
