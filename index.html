@@ -3,96 +3,330 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PixFix — AI 修图服务</title>
+<title>PixFix — AI 修图，丢链接等大片</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{brand:'#e3170a'}}}}</script>
-<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}</style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+:root{--brand:#e3170a;--bg:#08080a;--surface:#111114;--border:#1e1e22;--text:#e4e4e7;--muted:#71717a}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+.grain::after{content:'';position:fixed;inset:0;opacity:.03;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");pointer-events:none;z-index:999}
+.hero-text{font-size:clamp(3rem,8vw,6rem);line-height:.9;letter-spacing:-.03em;font-weight:900}
+.comparison-slider{position:relative;overflow:hidden;border-radius:1rem}
+.comparison-slider img{width:100%;display:block}
+.comparison-after{position:absolute;top:0;left:50%;width:50%;height:100%;overflow:hidden}
+.comparison-after img{position:absolute;top:0;left:0;width:200%;max-width:none}
+.comparison-handle{position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;cursor:ew-resize;z-index:2}
+.comparison-handle::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:var(--brand);border:3px solid #fff}
+.fade-in{animation:fadeIn .8s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
-<body class="bg-zinc-950 text-white min-h-screen">
+<body class="grain">
+
+<!-- Nav -->
+<nav class="fixed top-0 w-full z-50 bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)]">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="#" class="text-2xl font-black tracking-tight">Pix<span class="text-[var(--brand)]">Fix</span></a>
+    <div class="flex items-center gap-4">
+      <span id="userBadge" class="hidden text-sm text-[var(--muted)]"></span>
+      <button id="loginBtn" onclick="showAuth()" class="text-sm text-[var(--muted)] hover:text-white transition-colors">登录</button>
+      <button id="logoutBtn" onclick="logout()" class="hidden text-sm text-[var(--muted)] hover:text-white transition-colors">退出</button>
+    </div>
+  </div>
+</nav>
 
 <!-- Hero -->
-<header class="text-center pt-20 pb-12 px-4">
-  <h1 class="text-5xl font-bold tracking-tight">Pix<span class="text-brand">Fix</span></h1>
-  <p class="mt-4 text-zinc-400 text-lg max-w-md mx-auto">丢个网盘链接，等着收精修大片。<br>AI 全自动，不用学，不用等。</p>
-</header>
+<section class="min-h-screen flex items-center pt-16">
+  <div class="max-w-4xl mx-auto px-6 py-20 text-center">
+    <div class="fade-in">
+      <div class="inline-flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-full px-4 py-2 text-sm text-[var(--muted)] mb-8">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>内测中，限邀注册
+      </div>
+      <h1 class="hero-text mb-6">
+        丢个链接<br>
+        <span class="text-[var(--brand)]">等着收片</span>
+      </h1>
+      <p class="text-xl text-[var(--muted)] max-w-xl mx-auto mb-12 leading-relaxed">
+        AI 全自动修图管道。RAW 转档 · 智能选片 · 人像精修 · 电影调色。<br>不用学，不用等，不用装任何软件。
+      </p>
+      <button onclick="scrollToForm()" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold px-10 py-4 rounded-xl text-lg transition-all hover:scale-105">
+        开始修图
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Before/After -->
+<section class="py-24 px-6">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-4xl font-black mb-4">修图对比</h2>
+    <p class="text-[var(--muted)] mb-12">左边原片，右边 PixFix。不是滤镜——是重新打光。</p>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="fade-in">
+        <div class="comparison-slider bg-[var(--surface)] aspect-[3/4] flex items-center justify-center text-[var(--muted)] text-sm" id="demo1">
+          <div class="relative w-full h-full group cursor-pointer" onclick="toggleDemo(this)">
+            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=800&fit=crop" class="w-full h-full object-cover rounded-xl">
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+              <span class="text-white text-sm">替换为你的修图对比</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-center mt-4 text-sm text-[var(--muted)]">人像精修</p>
+      </div>
+      <div class="fade-in" style="animation-delay:.2s">
+        <div class="comparison-slider bg-[var(--surface)] aspect-[3/4] flex items-center justify-center text-[var(--muted)] text-sm" id="demo2">
+          <div class="relative w-full h-full group cursor-pointer" onclick="toggleDemo(this)">
+            <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&h=800&fit=crop" class="w-full h-full object-cover rounded-xl">
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+              <span class="text-white text-sm">替换为你的修图对比</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-center mt-4 text-sm text-[var(--muted)]">电影调色</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it Works -->
+<section class="py-24 px-6 bg-[var(--surface)]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-4xl font-black mb-16 text-center">怎么用</h2>
+    <div class="grid md:grid-cols-3 gap-12">
+      <div class="text-center fade-in">
+        <div class="w-16 h-16 rounded-2xl bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center mx-auto mb-6 text-2xl">📤</div>
+        <h3 class="font-bold text-lg mb-2">1. 丢网盘链接</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">把 RAW 原片传到百度网盘或阿里云盘，分享链接贴过来。</p>
+      </div>
+      <div class="text-center fade-in" style="animation-delay:.15s">
+        <div class="w-16 h-16 rounded-2xl bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center mx-auto mb-6 text-2xl">🤖</div>
+        <h3 class="font-bold text-lg mb-2">2. AI 自动修</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">智能选片 → 人像精修 → 电影调色。全自动管道，零人工。</p>
+      </div>
+      <div class="text-center fade-in" style="animation-delay:.3s">
+        <div class="w-16 h-16 rounded-2xl bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center mx-auto mb-6 text-2xl">✨</div>
+        <h3 class="font-bold text-lg mb-2">3. 等着收片</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">24 小时内成品链接发回。下载即用，不发朋友圈算你白修。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Advantages -->
+<section class="py-24 px-6">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-4xl font-black mb-16 text-center">为什么选 PixFix</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 fade-in">
+        <h3 class="font-bold text-xl mb-3">电影级光影重塑</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">不是套滤镜。主光源方向分析 + 体积光重构 + Kodak 2383 胶片模拟。Roger Deakins 不会回你微信，PixFix 会。</p>
+      </div>
+      <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 fade-in" style="animation-delay:.1s">
+        <h3 class="font-bold text-xl mb-3">不需要学任何东西</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">不装 Lightroom，不调曲线，不背快捷键。丢个链接，剩下的全是 AI 的事。</p>
+      </div>
+      <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 fade-in" style="animation-delay:.2s">
+        <h3 class="font-bold text-xl mb-3">AI 选片，不纠结</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">拍了一百张不知道怎么挑？清晰度 + 构图 + 曝光 三维评分，只留最好的。</p>
+      </div>
+      <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 fade-in" style="animation-delay:.3s">
+        <h3 class="font-bold text-xl mb-3">按张付费，不割韭菜</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">没订阅，没套餐。¥9.9/张，修几张付几张。不想修了随时停。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Auth Modal -->
+<div id="authModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
+  <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 w-full max-w-sm">
+    <h3 class="text-xl font-bold mb-6" id="authTitle">登录</h3>
+    <form id="authForm" class="space-y-4">
+      <input type="text" id="authName" placeholder="用户名" required class="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <input type="password" id="authPass" placeholder="密码" required class="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <input type="text" id="authInvite" placeholder="内测邀请码" class="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <div id="authToggle" class="text-sm text-center">
+        <span class="text-[var(--muted)]">没有账号？</span>
+        <button type="button" onclick="toggleAuthMode()" class="text-[var(--brand)] hover:underline ml-1">注册</button>
+      </div>
+      <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors">登录</button>
+      <div id="authMsg" class="hidden text-sm text-center"></div>
+    </form>
+    <button onclick="hideAuth()" class="block mx-auto mt-4 text-sm text-[var(--muted)] hover:text-white">取消</button>
+  </div>
+</div>
 
 <!-- Submit Form -->
-<section class="max-w-md mx-auto px-4 mb-16">
-  <form id="taskForm" class="space-y-4">
-    <div>
-      <label class="block text-sm text-zinc-400 mb-1">怎么称呼</label>
-      <input type="text" id="name" required placeholder="你的名字" 
-        class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:border-brand focus:outline-none">
-    </div>
-    <div>
-      <label class="block text-sm text-zinc-400 mb-1">网盘链接</label>
-      <input type="url" id="link" required placeholder="百度网盘 / 阿里云盘 分享链接" 
-        class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:border-brand focus:outline-none">
-    </div>
-    <div>
-      <label class="block text-sm text-zinc-400 mb-1">修图要求（选填）</label>
-      <textarea id="notes" rows="2" placeholder="比如：日系清新风、人像精修、只要5张…"
-        class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:border-brand focus:outline-none"></textarea>
-    </div>
-    <button type="submit" class="w-full bg-brand hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition-colors">
-      提交修图任务
-    </button>
-  </form>
-  <div id="submitMsg" class="hidden mt-4 p-3 rounded-lg text-center text-sm"></div>
+<section id="submitSection" class="py-24 px-6 bg-[var(--surface)]">
+  <div class="max-w-md mx-auto">
+    <h2 class="text-4xl font-black mb-4">提交任务</h2>
+    <p class="text-[var(--muted)] mb-8" id="submitHint">需要登录后才能提交。</p>
+    <form id="taskForm" class="space-y-4 hidden">
+      <div>
+        <label class="block text-sm text-[var(--muted)] mb-1">网盘链接</label>
+        <input type="url" id="link" required placeholder="百度网盘 / 阿里云盘 分享链接" class="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      </div>
+      <div>
+        <label class="block text-sm text-[var(--muted)] mb-1">修图要求</label>
+        <textarea id="notes" rows="2" placeholder="日系清新 / 电影感 / 人像精修 / 只要5张…" class="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none"></textarea>
+      </div>
+      <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors">提交任务</button>
+    </form>
+    <div id="submitMsg" class="hidden mt-4 p-3 rounded-lg text-center text-sm"></div>
+  </div>
 </section>
 
 <!-- Task List -->
-<section class="max-w-md mx-auto px-4 pb-20">
-  <h2 class="text-lg font-semibold mb-4">我的任务</h2>
-  <div id="taskList" class="space-y-3"></div>
+<section class="py-24 px-6">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="text-4xl font-black mb-8">我的任务</h2>
+    <div id="taskList" class="space-y-4"></div>
+  </div>
 </section>
 
-<script>
-const STATUS = { pending: {label:'待处理',color:'text-yellow-400'}, processing:{label:'处理中',color:'text-blue-400'}, done:{label:'已完成',color:'text-green-400'} };
+<!-- Footer -->
+<footer class="py-12 border-t border-[var(--border)] text-center text-sm text-[var(--muted)]">
+  PixFix · AI 修图服务 · 内测中
+</footer>
 
-function loadTasks(){ return JSON.parse(localStorage.getItem('pixfix_tasks')||'[]') }
-function saveTasks(t){ localStorage.setItem('pixfix_tasks', JSON.stringify(t)) }
+<script>
+// --- State ---
+const PB_URL = 'http://127.0.0.1:8091';
+const TASKS_KEY = 'pixfix_tasks';
+let authToken = localStorage.getItem('pixfix_token') || '';
+let authUser = JSON.parse(localStorage.getItem('pixfix_user')||'null');
+let isRegisterMode = false;
+
+// --- Auth ---
+async function pbAuth(action, name, pass, invite){
+  const res = await fetch(`${PB_URL}/api/collections/users/auth-with-password`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({identity:name, password:pass})
+  });
+  if(!res.ok) throw new Error((await res.json()).message||'登录失败');
+  return res.json();
+}
+
+async function pbRegister(name, pass, invite){
+  // Verify invite code
+  if(invite !== 'PIXFIX2026') throw new Error('邀请码无效');
+  const res = await fetch(`${PB_URL}/api/collections/users/records`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:name, password:pass, passwordConfirm:pass, email:`${name}@pixfix.local`})
+  });
+  if(!res.ok) throw new Error((await res.json()).message||'注册失败');
+  return pbAuth(name, pass, invite);
+}
+
+function updateUI(){
+  const loggedIn = !!authToken && !!authUser;
+  document.getElementById('loginBtn').classList.toggle('hidden', loggedIn);
+  document.getElementById('logoutBtn').classList.toggle('hidden', !loggedIn);
+  document.getElementById('userBadge').classList.toggle('hidden', !loggedIn);
+  if(loggedIn){
+    document.getElementById('userBadge').textContent = authUser.username;
+    document.getElementById('taskForm').classList.remove('hidden');
+    document.getElementById('submitHint').classList.add('hidden');
+  }else{
+    document.getElementById('taskForm').classList.add('hidden');
+    document.getElementById('submitHint').classList.remove('hidden');
+  }
+}
+
+function showAuth(){ document.getElementById('authModal').classList.remove('hidden') }
+function hideAuth(){ document.getElementById('authModal').classList.add('hidden') }
+
+function toggleAuthMode(){
+  isRegisterMode = !isRegisterMode;
+  document.getElementById('authTitle').textContent = isRegisterMode ? '注册' : '登录';
+  document.getElementById('authToggle').querySelector('span').textContent = isRegisterMode ? '已有账号？' : '没有账号？';
+  document.getElementById('authToggle').querySelector('button').textContent = isRegisterMode ? '登录' : '注册';
+  document.querySelector('#authForm button[type=submit]').textContent = isRegisterMode ? '注册' : '登录';
+}
+
+document.getElementById('authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = document.getElementById('authName').value.trim();
+  const pass = document.getElementById('authPass').value.trim();
+  const invite = document.getElementById('authInvite').value.trim();
+  const msg = document.getElementById('authMsg');
+  msg.classList.remove('hidden');
+  try{
+    const data = isRegisterMode ? await pbRegister(name, pass, invite) : await pbAuth(name, pass, invite);
+    authToken = data.token;
+    authUser = data.record;
+    localStorage.setItem('pixfix_token', authToken);
+    localStorage.setItem('pixfix_user', JSON.stringify(authUser));
+    msg.className = 'text-sm text-center text-green-400 mt-2';
+    msg.textContent = '登录成功';
+    hideAuth();
+    updateUI();
+    renderTasks();
+    setTimeout(()=>msg.classList.add('hidden'), 2000);
+  }catch(err){
+    msg.className = 'text-sm text-center text-red-400 mt-2';
+    msg.textContent = err.message;
+  }
+});
+
+function logout(){
+  authToken = ''; authUser = null;
+  localStorage.removeItem('pixfix_token');
+  localStorage.removeItem('pixfix_user');
+  updateUI();
+  renderTasks();
+}
+
+// --- Tasks ---
+function loadTasks(){ return JSON.parse(localStorage.getItem(TASKS_KEY)||'[]') }
+function saveTasks(t){ localStorage.setItem(TASKS_KEY, JSON.stringify(t)) }
 
 function renderTasks(){
-  const tasks = loadTasks();
   const el = document.getElementById('taskList');
-  if(!tasks.length){ el.innerHTML = '<p class="text-zinc-600 text-sm">还没有任务，提交一个试试</p>'; return }
-  el.innerHTML = tasks.reverse().map((t,i) => `
-    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-      <div class="flex justify-between items-start mb-2">
-        <span class="font-medium">${t.name}</span>
-        <span class="text-xs ${STATUS[t.status].color}">${STATUS[t.status].label}</span>
+  const tasks = loadTasks().reverse();
+  if(!tasks.length){ el.innerHTML = '<p class="text-[var(--muted)] text-sm">暂无任务</p>'; return }
+  el.innerHTML = tasks.map(t => `
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 flex items-start justify-between gap-4">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-xs px-2 py-1 rounded-full ${t.status==='done'?'bg-green-400/10 text-green-400':t.status==='processing'?'bg-blue-400/10 text-blue-400':'bg-yellow-400/10 text-yellow-400'}">
+            ${t.status==='done'?'已完成':t.status==='processing'?'处理中':'待处理'}
+          </span>
+          <span class="text-xs text-[var(--muted)]">${new Date(t.created).toLocaleDateString()}</span>
+        </div>
+        <p class="text-sm text-[var(--muted)] truncate">${t.link}</p>
+        ${t.notes?`<p class="text-xs text-[var(--muted)] mt-1">${t.notes}</p>`:''}
+        ${t.status==='done'&&t.output?`<a href="${t.output}" target="_blank" class="inline-block mt-2 text-xs text-[var(--brand)] hover:underline">查看成品 →</a>`:''}
       </div>
-      <p class="text-sm text-zinc-500 truncate">${t.link}</p>
-      ${t.notes ? `<p class="text-xs text-zinc-600 mt-1">${t.notes}</p>` : ''}
-      ${t.status === 'done' && t.output ? `<a href="${t.output}" target="_blank" class="inline-block mt-2 text-xs text-brand hover:underline">查看成品 →</a>` : ''}
     </div>`).join('');
 }
 
 document.getElementById('taskForm').addEventListener('submit', e => {
   e.preventDefault();
+  if(!authToken) return showAuth();
   const task = {
     id: Date.now().toString(36),
-    name: document.getElementById('name').value.trim(),
     link: document.getElementById('link').value.trim(),
     notes: document.getElementById('notes').value.trim(),
-    status: 'pending',
+    status:'pending',
     created: new Date().toISOString()
   };
-  const tasks = loadTasks();
-  tasks.push(task);
-  saveTasks(tasks);
-  
+  saveTasks([...loadTasks(), task]);
+  document.getElementById('taskForm').reset();
   const msg = document.getElementById('submitMsg');
-  msg.className = 'mt-4 p-3 rounded-lg text-center text-sm bg-green-900/50 text-green-300';
-  msg.textContent = '已提交！修完后会通知你。';
+  msg.className = 'mt-4 p-3 rounded-lg text-center text-sm bg-green-400/10 text-green-400';
+  msg.textContent = '已提交！24h 内完成，成品链接会出现在下方。';
   msg.classList.remove('hidden');
-  
-  e.target.reset();
   renderTasks();
-  setTimeout(() => msg.classList.add('hidden'), 3000);
+  setTimeout(()=>msg.classList.add('hidden'), 4000);
 });
 
+// --- Utils ---
+function scrollToForm(){ document.getElementById('submitSection').scrollIntoView({behavior:'smooth'}) }
+function toggleDemo(el){ el.querySelector('.bg-black\\/60').classList.toggle('opacity-0') }
+updateUI();
 renderTasks();
 </script>
 </body>
