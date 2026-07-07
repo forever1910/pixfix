@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;500;700&display=swap');
-:root{--brand:#ff2d2d;--bg:#0a0b0e;--surface:#12141a;--border:#1f2128;--text:#d4d4d8;--muted:#52525b}
+:root{--brand:#ff2d2d;--bg:#0a0b0e;--surface:#14161c;--border:#252830;--text:#e8e8ec;--muted:#6b6e77}
 body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text)}
 h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 .grain::after{content:'';position:fixed;inset:0;opacity:.025;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");pointer-events:none;z-index:999}
@@ -48,16 +48,16 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
       <div class="inline-flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] mono mb-8">
         <span class="dot-red"></span>BETA · INVITE ONLY
       </div>
-      <h1 class="hero-text mb-6">DROP LINK<br><span class="text-[var(--brand)]">GET FRAMES</span></h1>
-      <p class="text-base text-[var(--muted)] max-w-xl mx-auto mb-12 leading-relaxed">
-        AI trained on Instagram's most influential portfolios. Master-grade color grading, aesthetic-driven retouching pipeline.
+      <h1 class="hero-text mb-6">丢链接<span class="text-[var(--brand)]">收大片</span></h1>
+      <p class="text-base text-[var(--text)] max-w-xl mx-auto mb-12 leading-relaxed opacity-80">
+        基于 Ins 万张精选人像训练的 AI 修图引擎。大师级调色，审美驱动。
       </p>
-      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">TRAINING DATA</span><span class="spec-value">10K+ Ins fashion · editorial · portrait portfolios</span></div>
-      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">STYLE ENGINE</span><span class="spec-value">Master-grade color profiles · Cinematic LUTs</span></div>
-      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">FORMAT</span><span class="spec-value">.RAF .RW2 .CR3 .NEF .ARW .DNG</span></div>
-      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">PRICE</span><span class="spec-value">¥9.9 / FRAME</span></div>
+      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">AI 训练集</span><span class="spec-value">10K+ Ins 时尚 · 人像 · 编辑作品</span></div>
+      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">风格引擎</span><span class="spec-value">大师级色彩 · 电影 LUT · 光影重塑</span></div>
+      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">支持格式</span><span class="spec-value">.RAF .RW2 .CR3 .NEF .ARW .DNG</span></div>
+      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">状态</span><span class="spec-value"><span class="dot-red"></span>内测中</span></div>
       <button onclick="location.hash='#/tasks'" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm px-10 py-4 border border-[var(--brand)] transition-colors">
-        START RETOUCH
+        开始修图
       </button>
     </div>
   </div>
@@ -66,8 +66,8 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 <!-- Before/After -->
 <section class="py-24 px-6">
   <div class="max-w-5xl mx-auto">
-    <h2 class="text-3xl font-bold mb-4 mono">BEFORE / AFTER</h2>
-    <p class="text-[var(--muted)] text-xs mb-12 mono">LEFT: RAW · RIGHT: PIXFIX MASTER GRADE</p>
+    <h2 class="text-3xl font-bold mb-4 mono">修图对比</h2>
+    <p class="text-[var(--muted)] text-xs mb-12 mono">原片 vs PixFix 大师级调色</p>
     <div class="grid md:grid-cols-2 gap-8">
       <div class="fade-in"><div class="bg-[var(--surface)] aspect-[3/4] flex items-center justify-center border border-[var(--border)]"><span class="text-[var(--muted)] text-xs mono">PORTRAIT RETOUCH</span></div><p class="text-center mt-3 text-xs text-[var(--muted)] mono">SKIN · FACE SCULPT</p></div>
       <div class="fade-in" style="animation-delay:.2s"><div class="bg-[var(--surface)] aspect-[3/4] flex items-center justify-center border border-[var(--border)]"><span class="text-[var(--muted)] text-xs mono">CINEMATIC GRADE</span></div><p class="text-center mt-3 text-xs text-[var(--muted)] mono">KODAK 2383 · TEAL/ORANGE</p></div>
@@ -78,22 +78,22 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 <!-- How it Works -->
 <section class="py-24 px-6 bg-[var(--surface)]">
   <div class="max-w-5xl mx-auto">
-    <h2 class="text-3xl font-bold mb-16 text-center mono">HOW IT WORKS</h2>
+    <h2 class="text-3xl font-bold mb-16 text-center mono">三步搞定</h2>
     <div class="grid md:grid-cols-3 gap-12">
       <div class="text-center fade-in">
         <div class="w-14 h-14 border border-[var(--border)] flex items-center justify-center mx-auto mb-6 mono text-lg text-[var(--muted)]">01</div>
-        <h3 class="font-bold text-base mb-2 mono">DROP LINK</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">Upload RAW to any cloud drive, paste the share link.</p>
+        <h3 class="font-bold text-base mb-2 mono">丢链接</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">RAW 原片传到网盘，分享链接贴过来。</p>
       </div>
       <div class="text-center fade-in" style="animation-delay:.15s">
         <div class="w-14 h-14 border border-[var(--brand)] flex items-center justify-center mx-auto mb-6 mono text-lg text-[var(--brand)]">02</div>
-        <h3 class="font-bold text-base mb-2 mono">AI RETOUCH</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">Cull → skin retouch → cinematic grade. Trained on top 1% Ins portfolios.</p>
+        <h3 class="font-bold text-base mb-2 mono">自动修</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">AI 选片 + 人像精修 + 电影调色。Ins 万张精选审美训练。</p>
       </div>
       <div class="text-center fade-in" style="animation-delay:.3s">
         <div class="w-14 h-14 border border-[var(--border)] flex items-center justify-center mx-auto mb-6 mono text-lg text-[var(--muted)]">03</div>
-        <h3 class="font-bold text-base mb-2 mono">DELIVERY</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">24h turnaround. Finished frames, ready to post.</p>
+        <h3 class="font-bold text-base mb-2 mono">收片</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">24 小时交付。直接发朋友圈。</p>
       </div>
     </div>
   </div>
@@ -102,30 +102,30 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 <!-- Why PixFix -->
 <section class="py-24 px-6">
   <div class="max-w-5xl mx-auto">
-    <h2 class="text-3xl font-bold mb-16 text-center mono">THE DIFFERENCE</h2>
+    <h2 class="text-3xl font-bold mb-16 text-center mono">为什么选 PixFix</h2>
     <div class="grid md:grid-cols-2 gap-4">
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in">
-        <h3 class="font-bold text-base mb-2 mono">INS-TRAINED AESTHETIC</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">Trained on 10,000+ fashion, editorial and portrait portfolios from Instagram's most influential photographers. Not a generic filter — learned taste.</p>
+        <h3 class="font-bold text-base mb-2 mono">Ins 审美训练</h3>
+        <p class="text-[var(--text)] text-xs leading-relaxed opacity-75">10,000+ 张 Ins 时尚/人像/编辑精选作品训练的 AI 模型。不是通用滤镜，是学出来的品味。</p>
       </div>
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in" style="animation-delay:.1s">
-        <h3 class="font-bold text-base mb-2 mono">MASTER-GRADE COLOR</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">Custom LUT pipeline. Light source analysis + volumetric relight + Kodak 2383 film emulation. This is color grading, not color correction.</p>
+        <h3 class="font-bold text-base mb-2 mono">大师级调色</h3>
+        <p class="text-[var(--text)] text-xs leading-relaxed opacity-75">光源分析 + 体积光重构 + Kodak 2383 胶片模拟。这是调色，不是套滤镜。</p>
       </div>
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in" style="animation-delay:.2s">
-        <h3 class="font-bold text-base mb-2 mono">AI CULL · ZERO EFFORT</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">Sharpness · composition · exposure · expression. Four-axis scoring. 200 frames in, 10 bangers out.</p>
+        <h3 class="font-bold text-base mb-2 mono">AI 选片</h3>
+        <p class="text-[var(--text)] text-xs leading-relaxed opacity-75">清晰度 · 构图 · 曝光 · 表情，四维评分。200 张进，10 张出。</p>
       </div>
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in" style="animation-delay:.3s">
-        <h3 class="font-bold text-base mb-2 mono">¥9.9 / FRAME · NO LOCK-IN</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">Pay per frame. No subscription. No套餐. Stop anytime.</p>
+        <h3 class="font-bold text-base mb-2 mono">零学习成本</h3>
+        <p class="text-[var(--text)] text-xs leading-relaxed opacity-75">不装 LR，不拉曲线。丢 RAW，收大片。你的时间是按快门的。</p>
       </div>
     </div>
   </div>
 </section>
 
 <footer class="py-12 border-t border-[var(--border)] text-center text-xs text-[var(--muted)] mono">
-  PIXFIX · AI PHOTO LAB · BETA
+  PIXFIX · AI 修图实验室 · 内测中
 </footer>
 </div>
 
@@ -134,25 +134,23 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 <section class="min-h-screen">
   <div id="taskLoginWall" class="max-w-sm mx-auto px-6 py-32 text-center">
     <div class="w-14 h-14 border border-[var(--border)] flex items-center justify-center mx-auto mb-8 mono text-lg text-[var(--muted)]">🔒</div>
-    <h2 class="text-2xl font-bold mb-4 mono">LOGIN REQUIRED</h2>
-    <p class="text-[var(--muted)] text-sm mb-8">Sign in to submit tasks and track progress.</p>
-    <button onclick="showAuth()" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm px-8 py-3">LOGIN</button>
+    <h2 class="text-2xl font-bold mb-4 mono">需要登录</h2>
+    <p class="text-[var(--muted)] text-sm mb-8">登录后提交修图任务，查看进度。</p>
+    <button onclick="showAuth()" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm px-8 py-3">登录</button>
   </div>
 
   <div id="taskContent" class="max-w-2xl mx-auto px-6 py-16 hidden">
-    <!-- Submit Form -->
     <div class="bg-[var(--surface)] border border-[var(--border)] p-6 mb-12">
-      <h2 class="text-xl font-bold mb-6 mono">NEW TASK</h2>
+      <h2 class="text-xl font-bold mb-6 mono">提交任务</h2>
       <form id="taskForm" class="space-y-4">
-        <input type="url" id="link" required placeholder="Cloud drive share link" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
-        <textarea id="notes" rows="2" placeholder="Style preference, frame count, notes…" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none"></textarea>
-        <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm py-3 transition-colors">SUBMIT</button>
+        <input type="url" id="link" required placeholder="网盘分享链接" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+        <textarea id="notes" rows="2" placeholder="修图要求、风格偏好、张数…" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none"></textarea>
+        <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm py-3 transition-colors">提交</button>
       </form>
       <div id="submitMsg" class="hidden mt-3 p-2 text-center text-xs"></div>
     </div>
 
-    <!-- Task Board -->
-    <h2 class="text-xl font-bold mb-6 mono">TASK BOARD</h2>
+    <h2 class="text-xl font-bold mb-6 mono">任务看板</h2>
     <div id="taskList" class="space-y-3"></div>
   </div>
 </section>
@@ -161,19 +159,19 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 <!-- Auth Modal -->
 <div id="authModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
   <div class="bg-[var(--surface)] border border-[var(--border)] p-8 w-full max-w-sm">
-    <h3 class="text-xl font-bold mb-6 mono" id="authTitle">LOGIN</h3>
+    <h3 class="text-xl font-bold mb-6 mono" id="authTitle">登录</h3>
     <form id="authForm" class="space-y-4">
-      <input type="text" id="authName" placeholder="Username" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
-      <input type="password" id="authPass" placeholder="Password" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
-      <input type="text" id="authInvite" placeholder="Invite code (required for signup)" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <input type="text" id="authName" placeholder="用户名" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <input type="password" id="authPass" placeholder="密码" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <input type="text" id="authInvite" placeholder="内测邀请码" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
       <div id="authToggle" class="text-xs text-center">
-        <span class="text-[var(--muted)]">No account?</span>
-        <button type="button" onclick="toggleAuthMode()" class="text-[var(--brand)] hover:underline ml-1">Sign up</button>
+        <span class="text-[var(--muted)]">没有账号？</span>
+        <button type="button" onclick="toggleAuthMode()" class="text-[var(--brand)] hover:underline ml-1">注册</button>
       </div>
-      <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm py-3 transition-colors">LOGIN</button>
+      <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm py-3 transition-colors">登录</button>
       <div id="authMsg" class="hidden text-xs text-center"></div>
     </form>
-    <button onclick="hideAuth()" class="block mx-auto mt-4 text-xs text-[var(--muted)] hover:text-white mono">CANCEL</button>
+    <button onclick="hideAuth()" class="block mx-auto mt-4 text-xs text-[var(--muted)] hover:text-white mono">取消</button>
   </div>
 </div>
 
@@ -202,7 +200,7 @@ async function pbAuth(u,p){
 }
 
 async function pbRegister(u,p,invite){
-  if(invite!==INVITE) throw new Error('Invalid invite code');
+  if(invite!==INVITE) throw new Error('邀请码无效');
   const d=await pbCall('POST','/api/collections/users/records',{username:u,password:p,passwordConfirm:p,email:`${u}@pixfix.local`});
   return pbAuth(u,p);
 }
@@ -230,16 +228,16 @@ function saveTasks(t){ localStorage.setItem(TASKS_KEY,JSON.stringify(t)) }
 function renderTasks(){
   const el=document.getElementById('taskList');
   const tasks=loadTasks().reverse();
-  if(!tasks.length){ el.innerHTML='<p class="text-[var(--muted)] text-xs">No tasks yet. Submit your first one.</p>'; return }
+  if(!tasks.length){ el.innerHTML='<p class="text-[var(--muted)] text-xs">还没有任务，提交第一个吧。</p>'; return }
   el.innerHTML=tasks.map(t=>`
     <div class="bg-[var(--surface)] border border-[var(--border)] p-4">
       <div class="flex items-center gap-3 mb-2">
-        <span class="text-xs px-2 py-0.5 ${t.status==='done'?'bg-green-400/10 text-green-400':t.status==='processing'?'bg-blue-400/10 text-blue-400':'bg-yellow-400/10 text-yellow-400'} mono">${t.status==='done'?'DONE':t.status==='processing'?'PROCESSING':'PENDING'}</span>
+        <span class="text-xs px-2 py-0.5 ${t.status==='done'?'bg-green-400/10 text-green-400':t.status==='processing'?'bg-blue-400/10 text-blue-400':'bg-yellow-400/10 text-yellow-400'} mono">${t.status==='done'?'已完成':t.status==='processing'?'处理中':'待处理'}</span>
         <span class="text-xs text-[var(--muted)]">${new Date(t.created).toLocaleDateString()}</span>
       </div>
       <p class="text-xs text-[var(--muted)] truncate">${t.link}</p>
       ${t.notes?`<p class="text-xs text-[var(--muted)] mt-1">${t.notes}</p>`:''}
-      ${t.status==='done'&&t.output_url?`<a href="${t.output_url}" target="_blank" class="inline-block mt-2 text-xs text-[var(--brand)] hover:underline mono">DOWNLOAD →</a>`:''}
+      ${t.status==='done'&&t.output_url?`<a href="${t.output_url}" target="_blank" class="inline-block mt-2 text-xs text-[var(--brand)] hover:underline mono">下载成品 →</a>`:''}
     </div>`).join('');
 }
 
@@ -248,7 +246,7 @@ document.getElementById('taskForm').addEventListener('submit',e=>{
   saveTasks([...loadTasks(),{id:Date.now().toString(36),link:document.getElementById('link').value.trim(),notes:document.getElementById('notes').value.trim(),status:'pending',created:new Date().toISOString()}]);
   document.getElementById('taskForm').reset();
   const msg=document.getElementById('submitMsg');
-  msg.className='mt-3 p-2 text-center text-xs bg-green-400/10 text-green-400'; msg.textContent='Submitted. 24h turnaround.'; msg.classList.remove('hidden');
+  msg.className='mt-3 p-2 text-center text-xs bg-green-400/10 text-green-400'; msg.textContent='已提交，24 小时内交付。'; msg.classList.remove('hidden');
   renderTasks(); setTimeout(()=>msg.classList.add('hidden'),3000);
 });
 
@@ -266,10 +264,10 @@ function showAuth(){ document.getElementById('authModal').classList.remove('hidd
 function hideAuth(){ document.getElementById('authModal').classList.add('hidden') }
 function toggleAuthMode(){
   isRegisterMode=!isRegisterMode;
-  document.getElementById('authTitle').textContent=isRegisterMode?'SIGN UP':'LOGIN';
-  document.getElementById('authToggle').querySelector('span').textContent=isRegisterMode?'Have account?':'No account?';
-  document.getElementById('authToggle').querySelector('button').textContent=isRegisterMode?'Login':'Sign up';
-  document.querySelector('#authForm button[type=submit]').textContent=isRegisterMode?'SIGN UP':'LOGIN';
+  document.getElementById('authTitle').textContent=isRegisterMode?'注册':'登录';
+  document.getElementById('authToggle').querySelector('span').textContent=isRegisterMode?'已有账号？':'没有账号？';
+  document.getElementById('authToggle').querySelector('button').textContent=isRegisterMode?'登录':'注册';
+  document.querySelector('#authForm button[type=submit]').textContent=isRegisterMode?'注册':'登录';
 }
 function logout(){ authToken='';authUser=null;localStorage.removeItem('pixfix_token');localStorage.removeItem('pixfix_user');updateUI();location.hash='#/'; }
 
