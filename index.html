@@ -210,7 +210,8 @@ async function pbCall(method,path,body){
 }
 
 async function pbAuth(u,p){
-  const d=await pbCall('POST','/api/collections/users/auth-with-password',{identity:u,password:p});
+  const email = u.includes('@') ? u : `${u}@pixfix.local`;
+  const d=await pbCall('POST','/api/collections/users/auth-with-password',{identity:email,password:p});
   return d;
 }
 
