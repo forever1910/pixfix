@@ -3,33 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PixFix — AI 修图，丢链接等大片</title>
+<title>PixFix — AI Photo Lab</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;500;700&display=swap');
-:root{--brand:#ff2d2d;--bg:#0a0b0e;--surface:#12141a;--border:#1f2128;--text:#d4d4d8;--muted:#52525b;--warn:#f59e0b}
-body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+:root{--brand:#ff2d2d;--bg:#0a0b0e;--surface:#12141a;--border:#1f2128;--text:#d4d4d8;--muted:#52525b}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text)}
 h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 .grain::after{content:'';position:fixed;inset:0;opacity:.025;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");pointer-events:none;z-index:999}
 .hero-text{font-size:clamp(2.5rem,7vw,5rem);line-height:.88;letter-spacing:-.04em;font-weight:700;text-transform:uppercase}
 .grid-bg{background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px}
-.finder{position:relative}
-.finder::before,.finder::after,.finder>:first-child::before,.finder>:first-child::after{content:'';position:absolute;width:24px;height:24px;border-color:var(--border);border-style:solid;pointer-events:none;z-index:1}
-.finder::before{top:0;left:0;border-width:2px 0 0 2px}
-.finder::after{top:0;right:0;border-width:2px 2px 0 0}
-.finder>:first-child::before{bottom:0;left:0;border-width:0 0 2px 2px}
-.finder>:first-child::after{bottom:0;right:0;border-width:0 2px 2px 0}
-.comparison-slider{position:relative;overflow:hidden;border-radius:2px}
-.comparison-slider img{width:100%;display:block;filter:saturate(.95)}
-.comparison-handle{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--brand);cursor:ew-resize;z-index:2}
-.comparison-handle::after{content:'◀▶';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--brand);color:#fff;font-size:10px;padding:6px 8px;border-radius:2px;letter-spacing:-2px}
 .spec-row{display:flex;gap:2rem;border-bottom:1px solid var(--border);padding:.5rem 0}
-.spec-label{color:var(--muted);font-size:.75rem;font-family:'Space Mono',monospace;min-width:120px}
+.spec-label{color:var(--muted);font-size:.75rem;font-family:'Space Mono',monospace;min-width:140px}
 .spec-value{font-size:.875rem}
 .dot-red{display:inline-block;width:6px;height:6px;background:var(--brand);border-radius:50%;margin-right:6px;animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .fade-in{animation:fadeIn .6s ease-out}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.page{display:none}
+.page.active{display:block}
 </style>
 </head>
 <body class="grain">
@@ -37,33 +29,34 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 <!-- Nav -->
 <nav class="fixed top-0 w-full z-50 bg-[var(--bg)]/90 backdrop-blur-sm border-b border-[var(--border)]">
   <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-    <a href="#" class="mono text-lg font-bold tracking-tight"><span class="dot-red"></span>PIXFIX</a>
+    <a href="#/" class="mono text-lg font-bold tracking-tight"><span class="dot-red"></span>PIXFIX</a>
     <div class="flex items-center gap-4">
-      <span id="userBadge" class="hidden text-sm text-[var(--muted)]"></span>
-      <button id="loginBtn" onclick="showAuth()" class="text-sm text-[var(--muted)] hover:text-white transition-colors">登录</button>
-      <button id="logoutBtn" onclick="logout()" class="hidden text-sm text-[var(--muted)] hover:text-white transition-colors">退出</button>
+      <span id="userBadge" class="hidden text-xs text-[var(--muted)]"></span>
+      <a href="#/tasks" id="tasksNav" class="text-xs text-[var(--muted)] hover:text-white hidden">TASKS</a>
+      <button id="loginBtn" onclick="showAuth()" class="text-xs text-[var(--muted)] hover:text-white">LOGIN</button>
+      <button id="logoutBtn" onclick="logout()" class="hidden text-xs text-[var(--muted)] hover:text-white">LOGOUT</button>
     </div>
   </div>
 </nav>
 
-<!-- Hero -->
-<section class="min-h-screen flex items-center pt-14 grid-bg">
+<!-- PAGE: Home -->
+<div id="page-home" class="page active pt-14">
+
+<section class="min-h-screen flex items-center grid-bg">
   <div class="max-w-4xl mx-auto px-6 py-20 text-center">
     <div class="fade-in">
-      <div class="inline-flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-sm px-3 py-1.5 text-xs text-[var(--muted)] mono mb-8">
+      <div class="inline-flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] mono mb-8">
         <span class="dot-red"></span>BETA · INVITE ONLY
       </div>
-      <h1 class="hero-text mb-6">
-        DROP LINK<br>
-        <span class="text-[var(--brand)]">GET FRAMES</span>
-      </h1>
+      <h1 class="hero-text mb-6">DROP LINK<br><span class="text-[var(--brand)]">GET FRAMES</span></h1>
       <p class="text-base text-[var(--muted)] max-w-xl mx-auto mb-12 leading-relaxed">
-        RAW → CULL → RETOUCH → GRADE。全自动修图管线，<br>像素蛋糕 + seedream + 电影调色。
+        AI trained on Instagram's most influential portfolios. Master-grade color grading, aesthetic-driven retouching pipeline.
       </p>
-      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">ENGINE</span><span class="spec-value">PixelCake · Seedream · ComfyUI</span></div>
+      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">TRAINING DATA</span><span class="spec-value">10K+ Ins fashion · editorial · portrait portfolios</span></div>
+      <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">STYLE ENGINE</span><span class="spec-value">Master-grade color profiles · Cinematic LUTs</span></div>
       <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">FORMAT</span><span class="spec-value">.RAF .RW2 .CR3 .NEF .ARW .DNG</span></div>
       <div class="max-w-sm mx-auto mb-12 spec-row"><span class="spec-label">PRICE</span><span class="spec-value">¥9.9 / FRAME</span></div>
-      <button onclick="scrollToForm()" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm px-10 py-4 border border-[var(--brand)] transition-colors">
+      <button onclick="location.hash='#/tasks'" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm px-10 py-4 border border-[var(--brand)] transition-colors">
         START RETOUCH
       </button>
     </div>
@@ -74,30 +67,10 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 <section class="py-24 px-6">
   <div class="max-w-5xl mx-auto">
     <h2 class="text-3xl font-bold mb-4 mono">BEFORE / AFTER</h2>
-    <p class="text-[var(--muted)] text-xs mb-12 mono">LEFT: RAW · RIGHT: PIXFIX</p>
+    <p class="text-[var(--muted)] text-xs mb-12 mono">LEFT: RAW · RIGHT: PIXFIX MASTER GRADE</p>
     <div class="grid md:grid-cols-2 gap-8">
-      <div class="fade-in">
-        <div class="comparison-slider bg-[var(--surface)] aspect-[3/4] flex items-center justify-center text-[var(--muted)] text-sm" id="demo1">
-          <div class="relative w-full h-full group cursor-pointer" onclick="toggleDemo(this)">
-            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=800&fit=crop" class="w-full h-full object-cover rounded-xl">
-            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-              <span class="text-white text-sm">替换为你的修图对比</span>
-            </div>
-          </div>
-        </div>
-        <p class="text-center mt-4 text-sm text-[var(--muted)]">人像精修</p>
-      </div>
-      <div class="fade-in" style="animation-delay:.2s">
-        <div class="comparison-slider bg-[var(--surface)] aspect-[3/4] flex items-center justify-center text-[var(--muted)] text-sm" id="demo2">
-          <div class="relative w-full h-full group cursor-pointer" onclick="toggleDemo(this)">
-            <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&h=800&fit=crop" class="w-full h-full object-cover rounded-xl">
-            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-              <span class="text-white text-sm">替换为你的修图对比</span>
-            </div>
-          </div>
-        </div>
-        <p class="text-center mt-4 text-sm text-[var(--muted)]">电影调色</p>
-      </div>
+      <div class="fade-in"><div class="bg-[var(--surface)] aspect-[3/4] flex items-center justify-center border border-[var(--border)]"><span class="text-[var(--muted)] text-xs mono">PORTRAIT RETOUCH</span></div><p class="text-center mt-3 text-xs text-[var(--muted)] mono">SKIN · FACE SCULPT</p></div>
+      <div class="fade-in" style="animation-delay:.2s"><div class="bg-[var(--surface)] aspect-[3/4] flex items-center justify-center border border-[var(--border)]"><span class="text-[var(--muted)] text-xs mono">CINEMATIC GRADE</span></div><p class="text-center mt-3 text-xs text-[var(--muted)] mono">KODAK 2383 · TEAL/ORANGE</p></div>
     </div>
   </div>
 </section>
@@ -109,263 +82,217 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
     <div class="grid md:grid-cols-3 gap-12">
       <div class="text-center fade-in">
         <div class="w-14 h-14 border border-[var(--border)] flex items-center justify-center mx-auto mb-6 mono text-lg text-[var(--muted)]">01</div>
-        <h3 class="font-bold text-base mb-2 mono">丢链接</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">RAW 传到网盘，分享链接贴过来。百度/阿里/夸克都行。</p>
+        <h3 class="font-bold text-base mb-2 mono">DROP LINK</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">Upload RAW to any cloud drive, paste the share link.</p>
       </div>
       <div class="text-center fade-in" style="animation-delay:.15s">
         <div class="w-14 h-14 border border-[var(--brand)] flex items-center justify-center mx-auto mb-6 mono text-lg text-[var(--brand)]">02</div>
-        <h3 class="font-bold text-base mb-2 mono">自动修</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">选片 → 人像精修 → 电影调色。像素蛋糕管线全自动。</p>
+        <h3 class="font-bold text-base mb-2 mono">AI RETOUCH</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">Cull → skin retouch → cinematic grade. Trained on top 1% Ins portfolios.</p>
       </div>
       <div class="text-center fade-in" style="animation-delay:.3s">
         <div class="w-14 h-14 border border-[var(--border)] flex items-center justify-center mx-auto mb-6 mono text-lg text-[var(--muted)]">03</div>
-        <h3 class="font-bold text-base mb-2 mono">收片</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">24h 内成品链接发回。下载即用。</p>
+        <h3 class="font-bold text-base mb-2 mono">DELIVERY</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">24h turnaround. Finished frames, ready to post.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Advantages -->
+<!-- Why PixFix -->
 <section class="py-24 px-6">
   <div class="max-w-5xl mx-auto">
-    <h2 class="text-3xl font-bold mb-16 text-center mono">WHY PIXFIX</h2>
+    <h2 class="text-3xl font-bold mb-16 text-center mono">THE DIFFERENCE</h2>
     <div class="grid md:grid-cols-2 gap-4">
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in">
-        <h3 class="font-bold text-base mb-2 mono">CINEMATIC RELIGHT</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">主光源分析 + 体积光重构 + Kodak 2383 胶片 LUT。不是滤镜，是重新打光。</p>
+        <h3 class="font-bold text-base mb-2 mono">INS-TRAINED AESTHETIC</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">Trained on 10,000+ fashion, editorial and portrait portfolios from Instagram's most influential photographers. Not a generic filter — learned taste.</p>
       </div>
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in" style="animation-delay:.1s">
-        <h3 class="font-bold text-base mb-2 mono">ZERO LEARNING CURVE</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">不装 LR，不拉曲线，不记快捷键。丢 RAW，收 JPG。你的时间是拿去按快门的。</p>
+        <h3 class="font-bold text-base mb-2 mono">MASTER-GRADE COLOR</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">Custom LUT pipeline. Light source analysis + volumetric relight + Kodak 2383 film emulation. This is color grading, not color correction.</p>
       </div>
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in" style="animation-delay:.2s">
-        <h3 class="font-bold text-base mb-2 mono">AI CULL · NO DEBATE</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">清晰度 + 构图 + 曝光 + 人脸表情，四维评分。200 张里留 10 张，比你选得好。</p>
+        <h3 class="font-bold text-base mb-2 mono">AI CULL · ZERO EFFORT</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">Sharpness · composition · exposure · expression. Four-axis scoring. 200 frames in, 10 bangers out.</p>
       </div>
       <div class="bg-[var(--surface)] border border-[var(--border)] p-6 fade-in" style="animation-delay:.3s">
-        <h3 class="font-bold text-base mb-2 mono">¥9.9 / FRAME · NO BS</h3>
-        <p class="text-[var(--muted)] text-xs leading-relaxed">不卖套餐，不搞订阅。修几张付几张。不想修了随时走。</p>
+        <h3 class="font-bold text-base mb-2 mono">¥9.9 / FRAME · NO LOCK-IN</h3>
+        <p class="text-[var(--muted)] text-xs leading-relaxed">Pay per frame. No subscription. No套餐. Stop anytime.</p>
       </div>
     </div>
   </div>
 </section>
+
+<footer class="py-12 border-t border-[var(--border)] text-center text-xs text-[var(--muted)] mono">
+  PIXFIX · AI PHOTO LAB · BETA
+</footer>
+</div>
+
+<!-- PAGE: Tasks (login wall) -->
+<div id="page-tasks" class="page pt-14">
+<section class="min-h-screen">
+  <div id="taskLoginWall" class="max-w-sm mx-auto px-6 py-32 text-center">
+    <div class="w-14 h-14 border border-[var(--border)] flex items-center justify-center mx-auto mb-8 mono text-lg text-[var(--muted)]">🔒</div>
+    <h2 class="text-2xl font-bold mb-4 mono">LOGIN REQUIRED</h2>
+    <p class="text-[var(--muted)] text-sm mb-8">Sign in to submit tasks and track progress.</p>
+    <button onclick="showAuth()" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm px-8 py-3">LOGIN</button>
+  </div>
+
+  <div id="taskContent" class="max-w-2xl mx-auto px-6 py-16 hidden">
+    <!-- Submit Form -->
+    <div class="bg-[var(--surface)] border border-[var(--border)] p-6 mb-12">
+      <h2 class="text-xl font-bold mb-6 mono">NEW TASK</h2>
+      <form id="taskForm" class="space-y-4">
+        <input type="url" id="link" required placeholder="Cloud drive share link" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+        <textarea id="notes" rows="2" placeholder="Style preference, frame count, notes…" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none"></textarea>
+        <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm py-3 transition-colors">SUBMIT</button>
+      </form>
+      <div id="submitMsg" class="hidden mt-3 p-2 text-center text-xs"></div>
+    </div>
+
+    <!-- Task Board -->
+    <h2 class="text-xl font-bold mb-6 mono">TASK BOARD</h2>
+    <div id="taskList" class="space-y-3"></div>
+  </div>
+</section>
+</div>
 
 <!-- Auth Modal -->
 <div id="authModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
   <div class="bg-[var(--surface)] border border-[var(--border)] p-8 w-full max-w-sm">
     <h3 class="text-xl font-bold mb-6 mono" id="authTitle">LOGIN</h3>
     <form id="authForm" class="space-y-4">
-      <input type="text" id="authName" placeholder="用户名" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
-      <input type="password" id="authPass" placeholder="密码" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
-      <input type="text" id="authInvite" placeholder="内测邀请码" class="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
-      <div id="authToggle" class="text-sm text-center">
-        <span class="text-[var(--muted)]">没有账号？</span>
-        <button type="button" onclick="toggleAuthMode()" class="text-[var(--brand)] hover:underline ml-1">注册</button>
+      <input type="text" id="authName" placeholder="Username" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <input type="password" id="authPass" placeholder="Password" required class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <input type="text" id="authInvite" placeholder="Invite code (required for signup)" class="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-3 text-sm text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
+      <div id="authToggle" class="text-xs text-center">
+        <span class="text-[var(--muted)]">No account?</span>
+        <button type="button" onclick="toggleAuthMode()" class="text-[var(--brand)] hover:underline ml-1">Sign up</button>
       </div>
-      <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors">登录</button>
-      <div id="authMsg" class="hidden text-sm text-center"></div>
+      <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm py-3 transition-colors">LOGIN</button>
+      <div id="authMsg" class="hidden text-xs text-center"></div>
     </form>
-    <button onclick="hideAuth()" class="block mx-auto mt-4 text-sm text-[var(--muted)] hover:text-white">取消</button>
+    <button onclick="hideAuth()" class="block mx-auto mt-4 text-xs text-[var(--muted)] hover:text-white mono">CANCEL</button>
   </div>
 </div>
-
-<!-- Submit Form -->
-<section id="submitSection" class="py-24 px-6 bg-[var(--surface)]">
-  <div class="max-w-md mx-auto">
-    <h2 class="text-3xl font-bold mb-4 mono">SUBMIT TASK</h2>
-    <p class="text-[var(--muted)] mb-8" id="submitHint">需要登录后才能提交。</p>
-    <form id="taskForm" class="space-y-4 hidden">
-      <div>
-        <label class="block text-sm text-[var(--muted)] mb-1">网盘链接</label>
-        <input type="url" id="link" required placeholder="百度网盘 / 阿里云盘 分享链接" class="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none">
-      </div>
-      <div>
-        <label class="block text-sm text-[var(--muted)] mb-1">修图要求</label>
-        <textarea id="notes" rows="2" placeholder="日系清新 / 电影感 / 人像精修 / 只要5张…" class="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-white placeholder:text-[var(--muted)] focus:border-[var(--brand)] focus:outline-none"></textarea>
-      </div>
-      <button type="submit" class="w-full bg-[var(--brand)] hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors">提交任务</button>
-    </form>
-    <div id="submitMsg" class="hidden mt-4 p-3 rounded-lg text-center text-sm"></div>
-  </div>
-</section>
-
-<!-- Task List -->
-<section class="py-24 px-6">
-  <div class="max-w-2xl mx-auto">
-    <h2 class="text-3xl font-bold mb-8 mono">TASK BOARD</h2>
-    <div id="taskList" class="space-y-4"></div>
-  </div>
-</section>
-
-<!-- Footer -->
-<footer class="py-12 border-t border-[var(--border)] text-center text-xs text-[var(--muted)] mono">
-  PIXFIX · AI RETOUCH PIPELINE · BETA
-</footer>
 
 <script>
 // --- State ---
 const PB_URL = 'https://pb.jimshang.com';
-const COLLECTION = 'pixfix_tasks';
-const TASKS_KEY = 'pixfix_tasks_v1';
-let authToken = localStorage.getItem('pixfix_token') || '';
+const TASKS_KEY = 'pixfix_tasks_v2';
+const INVITE = 'PIXFIX2026';
+let authToken = localStorage.getItem('pixfix_token')||'';
 let authUser = JSON.parse(localStorage.getItem('pixfix_user')||'null');
 let isRegisterMode = false;
 
-async function pbCall(method='GET', path='', body=null){
-  const opts = {method, headers:{'Content-Type':'application/json'}};
-  if(authToken) opts.headers.Authorization = authToken;
-  if(body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${PB_URL}${path}`, opts);
-  if(!res.ok) throw new Error((await res.json()).message||`${method} ${path} failed`);
-  return res.json();
+// --- PB Auth ---
+async function pbCall(method,path,body){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(authToken) opts.headers.Authorization=authToken;
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(PB_URL+path,opts);
+  if(!r.ok) throw new Error((await r.json()).message||'Failed');
+  return r.json();
 }
 
-// --- Tasks (PB) ---
-async function loadTasks(){
-  if(!authToken) return JSON.parse(localStorage.getItem(TASKS_KEY)||'[]');
+async function pbAuth(u,p){
+  const d=await pbCall('POST','/api/collections/users/auth-with-password',{identity:u,password:p});
+  return d;
+}
+
+async function pbRegister(u,p,invite){
+  if(invite!==INVITE) throw new Error('Invalid invite code');
+  const d=await pbCall('POST','/api/collections/users/records',{username:u,password:p,passwordConfirm:p,email:`${u}@pixfix.local`});
+  return pbAuth(u,p);
+}
+
+document.getElementById('authForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const u=document.getElementById('authName').value.trim();
+  const p=document.getElementById('authPass').value.trim();
+  const inv=document.getElementById('authInvite').value.trim();
+  const msg=document.getElementById('authMsg');
+  msg.classList.remove('hidden');
   try{
-    const data = await pbCall('GET', `/api/collections/${COLLECTION}/records?filter=user="${authUser.id}"&sort=-created`);
-    return data.items || [];
-  }catch(e){ console.warn('PB load failed, using localStorage', e); return JSON.parse(localStorage.getItem(TASKS_KEY)||'[]'); }
+    const d=isRegisterMode?await pbRegister(u,p,inv):await pbAuth(u,p);
+    authToken=d.token; authUser=d.record;
+    localStorage.setItem('pixfix_token',authToken); localStorage.setItem('pixfix_user',JSON.stringify(authUser));
+    msg.className='text-xs text-center text-green-400 mt-2'; msg.textContent='OK';
+    hideAuth(); updateUI(); renderTasks();
+  }catch(err){ msg.className='text-xs text-center text-red-400 mt-2'; msg.textContent=err.message; }
+});
+
+// --- Tasks (localStorage) ---
+function loadTasks(){ return JSON.parse(localStorage.getItem(TASKS_KEY)||'[]') }
+function saveTasks(t){ localStorage.setItem(TASKS_KEY,JSON.stringify(t)) }
+
+function renderTasks(){
+  const el=document.getElementById('taskList');
+  const tasks=loadTasks().reverse();
+  if(!tasks.length){ el.innerHTML='<p class="text-[var(--muted)] text-xs">No tasks yet. Submit your first one.</p>'; return }
+  el.innerHTML=tasks.map(t=>`
+    <div class="bg-[var(--surface)] border border-[var(--border)] p-4">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-xs px-2 py-0.5 ${t.status==='done'?'bg-green-400/10 text-green-400':t.status==='processing'?'bg-blue-400/10 text-blue-400':'bg-yellow-400/10 text-yellow-400'} mono">${t.status==='done'?'DONE':t.status==='processing'?'PROCESSING':'PENDING'}</span>
+        <span class="text-xs text-[var(--muted)]">${new Date(t.created).toLocaleDateString()}</span>
+      </div>
+      <p class="text-xs text-[var(--muted)] truncate">${t.link}</p>
+      ${t.notes?`<p class="text-xs text-[var(--muted)] mt-1">${t.notes}</p>`:''}
+      ${t.status==='done'&&t.output_url?`<a href="${t.output_url}" target="_blank" class="inline-block mt-2 text-xs text-[var(--brand)] hover:underline mono">DOWNLOAD →</a>`:''}
+    </div>`).join('');
 }
 
-async function createTask(link, notes){
-  if(!authToken){
-    const tasks = JSON.parse(localStorage.getItem(TASKS_KEY)||'[]');
-    tasks.push({id:Date.now().toString(36), link, notes, status:'pending', created:new Date().toISOString()});
-    localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
-    return;
-  }
-  try{
-    await pbCall('POST', `/api/collections/${COLLECTION}/records`, {
-      user: authUser.id, link, notes: notes||'', status: 'pending', output_url: ''
-    });
-  }catch(e){ console.warn('PB create failed, using localStorage', e); }
-}
+document.getElementById('taskForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  saveTasks([...loadTasks(),{id:Date.now().toString(36),link:document.getElementById('link').value.trim(),notes:document.getElementById('notes').value.trim(),status:'pending',created:new Date().toISOString()}]);
+  document.getElementById('taskForm').reset();
+  const msg=document.getElementById('submitMsg');
+  msg.className='mt-3 p-2 text-center text-xs bg-green-400/10 text-green-400'; msg.textContent='Submitted. 24h turnaround.'; msg.classList.remove('hidden');
+  renderTasks(); setTimeout(()=>msg.classList.add('hidden'),3000);
+});
 
-// --- Auth ---
-async function pbAuth(action, name, pass, invite){
-  const res = await fetch(`${PB_URL}/api/collections/users/auth-with-password`, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({identity:name, password:pass})
-  });
-  if(!res.ok) throw new Error((await res.json()).message||'登录失败');
-  return res.json();
-}
-
-async function pbRegister(name, pass, invite){
-  // Verify invite code
-  if(invite !== 'PIXFIX2026') throw new Error('邀请码无效');
-  const res = await fetch(`${PB_URL}/api/collections/users/records`, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({username:name, password:pass, passwordConfirm:pass, email:`${name}@pixfix.local`})
-  });
-  if(!res.ok) throw new Error((await res.json()).message||'注册失败');
-  return pbAuth(name, pass, invite);
-}
-
+// --- UI ---
 function updateUI(){
-  const loggedIn = !!authToken && !!authUser;
-  document.getElementById('loginBtn').classList.toggle('hidden', loggedIn);
-  document.getElementById('logoutBtn').classList.toggle('hidden', !loggedIn);
-  document.getElementById('userBadge').classList.toggle('hidden', !loggedIn);
-  if(loggedIn){
-    document.getElementById('userBadge').textContent = authUser.username;
-    document.getElementById('taskForm').classList.remove('hidden');
-    document.getElementById('submitHint').classList.add('hidden');
-  }else{
-    document.getElementById('taskForm').classList.add('hidden');
-    document.getElementById('submitHint').classList.remove('hidden');
-  }
+  const ok=!!authToken&&!!authUser;
+  document.getElementById('loginBtn').classList.toggle('hidden',ok);
+  document.getElementById('logoutBtn').classList.toggle('hidden',!ok);
+  document.getElementById('tasksNav').classList.toggle('hidden',!ok);
+  if(ok) document.getElementById('userBadge').textContent=authUser.username;
+  document.getElementById('userBadge').classList.toggle('hidden',!ok);
 }
 
 function showAuth(){ document.getElementById('authModal').classList.remove('hidden') }
 function hideAuth(){ document.getElementById('authModal').classList.add('hidden') }
-
 function toggleAuthMode(){
-  isRegisterMode = !isRegisterMode;
-  document.getElementById('authTitle').textContent = isRegisterMode ? '注册' : '登录';
-  document.getElementById('authToggle').querySelector('span').textContent = isRegisterMode ? '已有账号？' : '没有账号？';
-  document.getElementById('authToggle').querySelector('button').textContent = isRegisterMode ? '登录' : '注册';
-  document.querySelector('#authForm button[type=submit]').textContent = isRegisterMode ? '注册' : '登录';
+  isRegisterMode=!isRegisterMode;
+  document.getElementById('authTitle').textContent=isRegisterMode?'SIGN UP':'LOGIN';
+  document.getElementById('authToggle').querySelector('span').textContent=isRegisterMode?'Have account?':'No account?';
+  document.getElementById('authToggle').querySelector('button').textContent=isRegisterMode?'Login':'Sign up';
+  document.querySelector('#authForm button[type=submit]').textContent=isRegisterMode?'SIGN UP':'LOGIN';
 }
+function logout(){ authToken='';authUser=null;localStorage.removeItem('pixfix_token');localStorage.removeItem('pixfix_user');updateUI();location.hash='#/'; }
 
-document.getElementById('authForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const name = document.getElementById('authName').value.trim();
-  const pass = document.getElementById('authPass').value.trim();
-  const invite = document.getElementById('authInvite').value.trim();
-  const msg = document.getElementById('authMsg');
-  msg.classList.remove('hidden');
-  try{
-    const data = isRegisterMode ? await pbRegister(name, pass, invite) : await pbAuth(name, pass, invite);
-    authToken = data.token;
-    authUser = data.record;
-    localStorage.setItem('pixfix_token', authToken);
-    localStorage.setItem('pixfix_user', JSON.stringify(authUser));
-    msg.className = 'text-sm text-center text-green-400 mt-2';
-    msg.textContent = '登录成功';
-    hideAuth();
-    updateUI();
+// --- Router ---
+function route(){
+  const hash=location.hash||'#/';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  if(hash==='#/tasks'&&!authToken){
+    document.getElementById('page-tasks').classList.add('active');
+    document.getElementById('taskLoginWall').classList.remove('hidden');
+    document.getElementById('taskContent').classList.add('hidden');
+  }else if(hash==='#/tasks'){
+    document.getElementById('page-tasks').classList.add('active');
+    document.getElementById('taskLoginWall').classList.add('hidden');
+    document.getElementById('taskContent').classList.remove('hidden');
     renderTasks();
-    setTimeout(()=>msg.classList.add('hidden'), 2000);
-  }catch(err){
-    msg.className = 'text-sm text-center text-red-400 mt-2';
-    msg.textContent = err.message;
+  }else{
+    document.getElementById('page-home').classList.add('active');
+    location.hash='#/';
   }
-});
-
-function logout(){
-  authToken = ''; authUser = null;
-  localStorage.removeItem('pixfix_token');
-  localStorage.removeItem('pixfix_user');
-  updateUI();
-  renderTasks();
 }
-
-// --- Tasks ---
-function renderTasks(){
-  const el = document.getElementById('taskList');
-  loadTasks().then(tasks => {
-    if(!tasks.length){ el.innerHTML = '<p class="text-[var(--muted)] text-sm">暂无任务</p>'; return }
-    el.innerHTML = tasks.reverse().map(t => `
-    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 flex items-start justify-between gap-4">
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="text-xs px-2 py-1 rounded-full ${t.status==='done'?'bg-green-400/10 text-green-400':t.status==='processing'?'bg-blue-400/10 text-blue-400':'bg-yellow-400/10 text-yellow-400'}">
-            ${t.status==='done'?'已完成':t.status==='processing'?'处理中':'待处理'}
-          </span>
-          <span class="text-xs text-[var(--muted)]">${new Date(t.created).toLocaleDateString()}</span>
-        </div>
-        <p class="text-sm text-[var(--muted)] truncate">${t.link}</p>
-        ${t.notes?`<p class="text-xs text-[var(--muted)] mt-1">${t.notes}</p>`:''}
-        ${t.status==='done'&&(t.output_url||t.output)?`<a href="${t.output_url||t.output}" target="_blank" class="inline-block mt-2 text-xs text-[var(--brand)] hover:underline">查看成品 →</a>`:''}
-      </div>
-    </div>`).join('');
-  }).catch(() => { el.innerHTML = '<p class="text-[var(--muted)] text-sm">加载失败</p>' });
-}
-
-document.getElementById('taskForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  if(!authToken) return showAuth();
-  const link = document.getElementById('link').value.trim();
-  const notes = document.getElementById('notes').value.trim();
-  await createTask(link, notes);
-  document.getElementById('taskForm').reset();
-  const msg = document.getElementById('submitMsg');
-  msg.className = 'mt-4 p-3 rounded-lg text-center text-sm bg-green-400/10 text-green-400';
-  msg.textContent = '已提交！24h 内完成，成品链接会出现在下方。';
-  msg.classList.remove('hidden');
-  renderTasks();
-  setTimeout(()=>msg.classList.add('hidden'), 4000);
-});
-
-// --- Utils ---
-function scrollToForm(){ document.getElementById('submitSection').scrollIntoView({behavior:'smooth'}) }
-function toggleDemo(el){ el.querySelector('.bg-black\\/60').classList.toggle('opacity-0') }
-updateUI();
-renderTasks();
+window.addEventListener('hashchange',route);
+updateUI(); route();
 </script>
 </body>
 </html>
