@@ -6,9 +6,11 @@
 <title>PixFix — AI Photo Lab</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+@font-face{font-family:'DingTalk';src:url('https://cdn.jsdelivr.net/gh/nicelife2023/dingtalkjinbuti@main/fonts/DingTalkJinBuTi-Regular.woff2') format('woff2');font-display:swap}
 :root{--brand:#ff2d2d;--bg:#0a0b0e;--surface:#14161c;--border:#252830;--text:#e8e8ec;--muted:#6b6e77}
-body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text)}
+@media(prefers-color-scheme:light){:root{--brand:#e3170a;--bg:#f5f5f7;--surface:#ffffff;--border:#e5e5ea;--text:#1d1d1f;--muted:#86868b}}
+body{font-family:'DingTalk','Noto Sans SC',sans-serif;background:var(--bg);color:var(--text)}
 h1,h2,h3,.mono{font-family:'Space Mono',monospace}
 .grain::after{content:'';position:fixed;inset:0;opacity:.025;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");pointer-events:none;z-index:999}
 .hero-text{font-size:clamp(2.5rem,7vw,5rem);line-height:.88;letter-spacing:-.04em;font-weight:700;text-transform:uppercase}
@@ -59,6 +61,19 @@ h1,h2,h3,.mono{font-family:'Space Mono',monospace}
       <button onclick="location.hash='#/tasks'" class="bg-[var(--brand)] hover:bg-red-700 text-white font-bold mono text-sm px-10 py-4 border border-[var(--brand)] transition-colors">
         开始修图
       </button>
+    </div>
+  </div>
+</section>
+
+<!-- Photo Wall -->
+<section class="py-16 px-6 bg-[var(--surface)]">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold mb-8 text-center mono">灵感墙</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop" class="w-full aspect-[4/5] object-cover opacity-80 hover:opacity-100 transition-opacity" loading="lazy" alt="">
+      <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&h=500&fit=crop" class="w-full aspect-[4/5] object-cover opacity-80 hover:opacity-100 transition-opacity" loading="lazy" alt="">
+      <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=500&fit=crop" class="w-full aspect-[4/5] object-cover opacity-80 hover:opacity-100 transition-opacity" loading="lazy" alt="">
+      <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400&h=500&fit=crop" class="w-full aspect-[4/5] object-cover opacity-80 hover:opacity-100 transition-opacity" loading="lazy" alt="">
     </div>
   </div>
 </section>
